@@ -1,0 +1,8 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="Baza_danych_Części_samochodowe" id="B843CA04-74A0-14F3-447C-B2D4F720EA69" version="3.5">
+<createdBy>11523</createdBy>
+<createdTime>2026-03-27 05:49:35 UTC</createdTime>
+<ownerDesignName>Warszawa</ownerDesignName>
+<capitalNames>false</capitalNames>
+<designId>B843CA04-74A0-14F3-447C-B2D4F720EA69</designId>
+</OSDM_Design>
