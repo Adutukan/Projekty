@@ -1,0 +1,103 @@
+---
+title: "Porównywanie czasu metod sumowania metod liczb całkowitych w języku python"
+format: html
+date: 03-09-2026
+author: Gracjan Głowania
+
+---
+
+# Wstęp
+Poniższy badanie polega na tym, że porównujemy wydajność różnych metod sumowania liczb w języku python Dla ujednolicenia
+ przyjmijmy, że dodajemy poszczególne składniki ciągu składającego się z 40 000 000 liczb całkowitych dodatnich, które przyjmują losowo zakres od 1 do 100.
+ Wprowadzenie jest napisane następującym kodem:
+
+```{python}
+import  random;import  time;import  numpy as np
+
+x = [random.randint(1, 100) for _ in range(40000000)]
+macierz = np.array(x)
+
+``` 
+
+# Kod 1 - pętla for
+W pierszym kodzie liczby z ciągu są dodawane przy pomocy pętli "for", w którym każda liczba z listy jest dodawana do sumy częściowej krok po kroku.
+
+```{python}
+
+def  kod1():
+    suma  =  0
+    start  =  time.perf_counter()
+    for  x1  in  x:
+        suma += x1
+    end  =  time.perf_counter()
+    return  end - start
+
+```
+
+
+# Kod 2 - funkcja sum
+
+W drugim kodzie liczby z ciągu są dodawane przy pomocy funkcji "sum()".
+
+```{python}
+
+def  kod2():
+    start  =  time.perf_counter()
+    suma  =  sum(x)
+    end  =  time.perf_counter()
+    return  end - start
+
+```
+
+# Kod 3 - macierzowo z biblioteki numpy
+
+W trzecim kodzie za pomocą blblioteki "numpy" tworzymy macierz i sumujemy wszystkie składniki macierzy.
+
+```{python}
+def  kod3():
+    start  =  time.perf_counter()
+    suma  =  np.sum(macierz)
+    end  =  time.perf_counter()
+    return  end - start
+
+```
+
+
+# Porównanie 
+W tabeli zostały umieszczone czasy poszczególnych metod sumowania zbiorów liczb.
+
+
+
+```{python}
+
+#| echo: false
+kod1()
+
+kod2()
+
+kod3()
+
+t1  =  kod1()
+
+t2  =  kod2()
+
+t3  =  kod3()
+
+
+from   IPython.display   import   Markdown; from   tabulate   import   tabulate
+table = [
+    ["Kod 1 (Pętla for)", f"{t1:.4f} s"],
+    ["Kod 2 (Wbudowane sum)", f"{t2:.4f} s"],
+    ["Kod 3 (NumPy macierzowo)", f"{t3:.4f} s"]
+]
+Markdown(tabulate(
+  table, 
+  headers=["Metoda sumowania", "Czas działania"],
+  tablefmt="pipe" 
+))
+
+```
+
+
+# Wniosek
+Na podstawie wyników z tabeli możemy powiedzieć, że najszybszą metodą sumowania zbiór liczb jest metoda macierzowa.

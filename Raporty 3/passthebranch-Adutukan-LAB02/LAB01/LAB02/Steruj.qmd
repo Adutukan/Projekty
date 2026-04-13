@@ -1,0 +1,62 @@
+---
+title: "Porównywanie czasu metod sumowania liczb całkowitych w języku python na podstawie danych użytkownika."
+format: html
+date: 03-15-2026
+author: Gracjan Głowania
+
+---
+
+# Wstęp
+Poniższy badanie polega na tym, że porównujemy wydajność różnych metod sumowania liczb w języku python Dla ujednolicenia
+przyjmijmy, że dodajemy poszczególne składniki ciągu składającego się z 40 000 000 liczb całkowitych dodatnich, które przyjmują losowo zakres od 1 do 100.
+
+# Metody sumowania liczb w języku python
+
+W badaniu zostały wzięte 3 poniższe metody:
+
+-   W pierszej metodzie liczby z ciągu są dodawane przy    
+    pomocy pętli "for", w którym każda liczba z listy jest 
+    dodawana do sumy częściowej krok po kroku
+
+-   w drugiej metodzie liczby z ciągu są dodawane przy pomocy funkcji "sum()".
+
+-   W trzecim kodzie za pomocą blblioteki "numpy" tworzymy macierz i sumujemy wszystkie składniki macierzy.
+
+#  Porównywanie czasów metod sumowania liczb
+
+```{python}
+
+#| echo: false
+
+import  random;import  numpy as np; from   IPython.display   import   Markdown; from   tabulate   import   tabulate; from FUN import plik01, plik02, plik03
+
+
+
+def main():
+
+    ile = 1000000
+    od = 5
+    do = 60
+
+    x = [random.randint(od, do) for _ in range(ile)]
+    macierz = np.array(x)
+
+    t1  =  plik01.kod1(x)
+    t2  =  plik02.kod2(x)
+    t3  =  plik03.kod3(macierz)
+
+
+    table = [
+    ["Kod 1 (Pętla for)", f"{t1:.4f} s"],
+    ["Kod 2 (Wbudowane sum)", f"{t2:.4f} s"],
+    ["Kod 3 (NumPy macierzowo)", f"{t3:.4f} s"]
+    ]
+    display(Markdown(tabulate(
+    table, 
+    headers=["Metoda sumowania", "Czas działania"],
+    tablefmt="pipe" 
+    )))
+
+if __name__ == "__main__":
+    main()
+```

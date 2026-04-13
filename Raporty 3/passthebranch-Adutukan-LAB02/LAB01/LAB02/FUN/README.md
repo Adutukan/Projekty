@@ -1,0 +1,1 @@
+#W tym katalogu znajdują się kody, zawierające różne metody sumowania zbioru liczb
