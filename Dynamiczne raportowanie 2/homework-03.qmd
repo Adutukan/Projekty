@@ -1,0 +1,186 @@
+---
+title: Analiza wskaźników statystycznych na podstawie danych Eurostat
+author: Gracjan Głowania
+format: html
+date: 12-04-2025
+
+---
+
+# 1. Krajowe emisje netto gazów cieplarnianych 
+
+1. **Opis danych**
+    
+    Wskaźnik przedstawia poziom krajowych emisji netto gazów cieplarnianych. Dane pochodzą z inwentaryzacji emisji przedstawianych corocznie przez państwa członkowskie UE. Uwzględniono emisje następujących gazów: dwutlenek węgla (CO2), metan (CH4), podtlenek azotu (N2O), gazy fluorowane (HFC, PFC, NF3, SF6). Dane obejmują wszystkie sektory gospodarki-z wyłączeniem emisji z międzynarodowego transportu lotniczego i morskiego. Wskaźnik prezentowany jest jako wartość netto, co oznacza, że uwzględnia również efekty pochłaniania CO2 przez gleby i last (LULUCF). Wartości przedstawiono na podstawie danych dla lat 2021-2023, wyrażone jako emisję na 1 mieszkańca w tonach. 
+
+2. **Źródło**
+
+    * adres: https://ec.europa.eu/eurostat/databrowser/view/sdg_13_10/default/table?lang=en 
+    * Kod danych: sdg_13_10
+    * DOI: 10.2908/sdg_13_10
+    * Aktualizacja: 13.05.2025 23:00
+    * Źródło danych: Europejska Agencja Środowiska (EEA)
+
+
+
+3. **Tabela**
+
+    Poniższa tabela została uporządkowana alfabetycznie według symboli państw. Wartości liczbowe przedstawiono z dokładnością do jednego miejsca po przecinku i odnoszą się kolejno do lat: 2021, 2022 oraz 2023. Dane zostały zaprezentowane w formacie tabelarycznym w celu zachowania czytelności oraz umożliwienia bezpośredniego porównania wartości pomiędzy poszczególnymi państwami w ramach tych samych okresów czasowych.
+
+```{python}
+#| echo: false
+import matplotlib.pyplot as plt
+import pandas as pd
+from IPython.display import display, HTML
+
+
+df = pd.read_csv("EMS.tsv", sep="\t")
+
+
+df[["freq", "src_crf", "unit", "geo"]] = df["freq,src_crf,unit,geo\\TIME_PERIOD"].str.split(",", expand=True)
+df = df.drop(columns=["freq,src_crf,unit,geo\\TIME_PERIOD"])
+
+df.columns = df.columns.str.strip().str.replace(r"\s+", "", regex=True)
+
+df_one_unit = df[df["unit"] == "T_HAB"]
+
+
+df_nodup = df_one_unit.drop_duplicates(subset="geo").reset_index(drop=True)
+
+
+name_column = "geo_label" if "geo_label" in df_nodup.columns else "geo"
+
+year_columns = sorted([c for c in df_nodup.columns if c.isdigit()])
+
+
+df_final = df_nodup[[name_column] + year_columns]
+
+
+display(HTML(df_final.to_html(index=False)))
+
+```
+**Legenda do symboli państw**
+    AT – Austria, BE – Belgia, BG – Bułgaria, CY – Cypr, CZ – Czechy, DE – Niemcy, DK – Dania, EE – Estonia, EL – Grecja, ES – Hiszpania, FI – Finlandia, FR – Francja, HR – Chorwacja, HU – Węgry, IE – Irlandia, IS – Islandia, IT – Włochy, LT – Litwa, LU – Luksemburg, LV – Łotwa, MT – Malta, NL – Niderlandy, NO – Norwegia, PL – Polska, PT – Portugalia, RO – Rumunia, SE – Szwecja, SI – Słowenia, SK – Słowacja.
+
+4. **Wykres z roku 2023**
+
+    Poniższy wykres przedstawia państwa zapisane w formie symboli, uporządkowane malejąco według wartości analizowanego wskaźnika. Zaprezentowane dane dotyczą roku 2023. Skala na osi pionowej została dobrana tak, aby umożliwić jednoznaczny odczyt wartości, natomiast etykiety na osi poziomej odpowiadają oznaczeniom poszczególnych państw, co zapewnia spójność zapisu z tabelą źródłową.
+```{python}
+
+#| echo: false
+selected_year = year_columns[-1]
+df_plot = df_final[[name_column, selected_year]].set_index(name_column)
+df_plot = df_plot.sort_values(by=selected_year, ascending=False)
+
+plt.figure(figsize=(8, 4.5))
+plt.bar(df_plot.index, df_plot[selected_year])
+plt.grid(axis='y', linestyle='--', linewidth=0.7)
+plt.title(f"Emisja netto na 1 mieszkańca w roku {selected_year}")
+plt.xlabel(name_column)
+plt.ylabel("Emisja netto na 1 mieszkańca [t/os.]")
+plt.xticks(rotation=60)
+plt.tight_layout()
+plt.show()
+```
+
+**Legenda do symboli państw**
+    AT – Austria, BE – Belgia, BG – Bułgaria, CY – Cypr, CZ – Czechy, DE – Niemcy, DK – Dania, EE – Estonia, EL – Grecja, ES – Hiszpania, FI – Finlandia, FR – Francja, HR – Chorwacja, HU – Węgry, IE – Irlandia, IS – Islandia, IT – Włochy, LT – Litwa, LU – Luksemburg, LV – Łotwa, MT – Malta, NL – Niderlandy, NO – Norwegia, PL – Polska, PT – Portugalia, RO – Rumunia, SE – Szwecja, SI – Słowenia, SK – Słowacja.
+
+
+5. **Interpretacja**
+
+     * Malta, Szwecja, Portugalia oraz Rumunia należą do państw, gdzie emisja na 1 mieszkańca jest najmniejsza,
+     * Islandia, Luksemburg oraz Irlandia są to kraje z najwyższym wskaźnikiem emisji na 1 mieszkańca,
+     * Polska należąca do państw z najwyższymi odczytami emisji wyróżnia się negatywnie na tle państw sąsiedzkich np. do Słowacji.
+
+6. **Zastosowania analityczne**
+
+    * Monitorowanie realizacji celów klimatycznych UE
+    * Porównanie państw UE do państw spoza tej grupy 
+    * Planowanie środków na inwestycje klimatyczne
+    * Analiza skuteczności państwowych polityk redukcji emisji
+    * Kontrola kierunków transformacji energetycznej
+
+# 2. Udział energii odnawialnej w końcowym zużyciu energii brutto ogółem 
+
+1. **Opis danych**
+
+   Wskaźnik przedstawia udział energii ze źródeł odnawialnych w końcowym zużyciu energii brutto zgodnie z dyrektywą w sprawie odnawialnych źródeł energii. Końcowe zużycie energii brutto to energia zużyta przez odbiorców końcowych (końcowe zużycie) powiększona o straty sieciowe i zużycie energii przez własne elektrownie. Dane obejmują lata 2018-2023. Wartości wyrażono w procentach.  
+
+2. **Źródło**
+
+    * adres URL: https://ec.europa.eu/eurostat/databrowser/view/sdg_07_40/default/table?lang=en
+    * Kod danych online: sdg_07_40
+    * DOI: 10.2908/sdg_07_40
+    * Aktualizacja: 21/11/2025 23:00
+    * Źródło: Eurostat
+
+3. **Tabela**
+
+    Poniższa tabela została uporządkowana alfabetycznie według symboli państw. Wartości liczbowe zapisano w postaci liczb całkowitych i odnoszą się do kolejnych lat: 2018, 2019, 2020, 2021, 2022 oraz 2023. Zastosowany format liczbowy ujednolica zapis danych w całym zestawieniu, a struktura tabeli umożliwia równoległą prezentację wielu okresów czasowych w ramach jednej struktury danych.
+
+
+```{python}
+#| echo: false
+
+import pandas as pd
+from IPython.display import display, HTML
+
+filename = "ENG.tsv"
+df2 = pd.read_csv(filename, sep="\t")
+
+
+df2[["freq", "nrg_bal", "unit", "geo"]] = df2["freq,nrg_bal,unit,geo\\TIME_PERIOD"].str.split(",", expand=True)
+df2 = df2.drop(columns=["freq,nrg_bal,unit,geo\\TIME_PERIOD"])
+
+
+df2.columns = df2.columns.str.strip().str.replace(r"\s+", "", regex=True)
+
+
+df_one_unit2 = df2[df2["unit"] == "PC"]
+
+df_nodup2 = df_one_unit2.drop_duplicates(subset="geo").reset_index(drop=True)
+
+
+name_column = "geo_label" if "geo_label" in df_nodup2.columns else "geo"
+
+
+year_columns2 = sorted([c for c in df_nodup2.columns if c.isdigit()])
+
+
+df_final2 = df_nodup2[[name_column] + year_columns2].copy()
+
+
+df_final2[year_columns2] = (
+    df_final2[year_columns2]
+    .apply(pd.to_numeric, errors="coerce")
+    .round(0)
+    .astype("Int64")
+)
+
+
+display(HTML(df_final2.to_html(index=False)))
+
+```
+
+**Legenda do symboli państw**
+    AT – Austria, BE – Belgia, BG – Bułgaria, CY – Cypr, CZ – Czechy, DE – Niemcy, DK – Dania, EE – Estonia, EL – Grecja, ES – Hiszpania, FI – Finlandia, FR – Francja, HR – Chorwacja, HU – Węgry, IE – Irlandia, IS – Islandia, IT – Włochy, LT – Litwa, LU – Luksemburg, LV – Łotwa, MT – Malta, NL – Niderlandy, NO – Norwegia, PL – Polska, PT – Portugalia, RO – Rumunia, SE – Szwecja, SI – Słowenia, SK – Słowacja.
+
+4. **Interpretacja**
+
+    * W roku 2023 Szwecja zanotowała najwyższy udział energii odnawialnej.
+    * Litwa zanotowała wzrost udziału energii odnawialnej.
+    * Na Słowacji od 2019 do 2023 roku udział energii odnawialnej był na takim samym poziomie.
+
+5. **Zastosowania analityczne**
+  
+    * Ocena skuteczności inwestycji w odnawialne źródła energii
+    * Monitorowanie realizacji celów klimatyczno-energetycznych UE  
+
+
+
+
+
+
+    
+
+

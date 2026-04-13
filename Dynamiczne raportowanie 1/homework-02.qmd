@@ -1,0 +1,452 @@
+--- 
+title: "Funkcje matematyczne"
+format: html
+date: 11-17-2025
+author: Gracjan Głowania
+
+---
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# Wstęp
+
+W matematyce funkcje odgrywają kluczową rolę w opisie zjawisk rzeczywistych oraz w analizie zależności pomiędzy wielkościami. Mogą reprezentować wzrost populacji, zmianę temperatury lub tempo rozkładu chemicznego. Funkcje o różnych kształtach i właściwościach dostarczają różnych narzędzi do modelowania, a sposób ich zachowania często zależy od obecnych w nich parametrów. To właśnie parametry decydują o tym, jak wygląda wykres. Zmiana jednego parametru może całkowicie przeksztłacić funkcję, co w realnych zastosowaniach może odpowiadać na przykład spowolnieniu spadku populacji czy przesunięciu sygnału w czasie.
+
+Poniżej przedstawiam pięć rodzaji funkcji. Dla każdej funkcji przestawiono:
+
+1. Wzór wraz z oznaczeniami parametrów,
+
+2. Charakterystykę matematyczną- dziedzinę,przeciwdziedzinę, punkty szczególne,
+
+3. Opis wpływu parametrów na zachowanie wykresu,
+
+4. Najważniejsze własności- monotoniczność, wypukłość, ektrema, asymptoty,
+
+5. Wykresy funkcji dla czterech zestawów parametrów naniesione na jeden wykres,
+
+
+# 1. Funkcja wykładnicza
+
+1. **Wzór** 
+
+$$
+f(x) = a^{x}
+$$
+    
+Parametry:
+
+* $a$ - podstawa potęgi, gdzie $a\in \mathbb{R}^{+}$, $a\ne 1$,
+* $x$ - zmienna niezależna.
+
+2. **Charakterystyka funkcji**
+* Dziedzina:
+$\mathbb{R}$ - zbiór liczb rzeczywistych. 
+* Przeciwdziedzina:
+$W = \mathbb{R} ^ {+} = (0,+\infty)$ - zbiór dodatnich liczb rzeczywistych.
+* Punkty szczególne:
+    * funkcja nie ma miejsc zerowych, 
+    * punkt przecięcia z osią $OY$: $(0,1)$, ponieważ $f(0) = a^{0} =1$. 
+
+3. **Opis Parametrów**
+    *  $a$ - podstawa potęgi: 
+        *  określa kształt i monotoniczność funkcji (tempo/spadku),
+        *  podstawa musi być dodatnia $a>0$ i różna od $a\ne 1$,
+        *  jeśli $a>1$, funkcja jest rosnąca (wzrost wykładniczy). Im większe $a$, tym szybszy wzrost,
+        *  jeśli $0 < a < 1$, funkcja jest malejąca (zanik wykładniczy). Im mniejsze $a$, tym szybszy spadek.
+
+4. **Własności**
+* Monotoniczność:
+    * jeśli $a>1$, funkcja jest rosnąca w całej dziedzinie, 
+    * jeśli $0<a<1$, funkcja jest malejąca w całej dziedzinie. 
+* Ekstrema: funkcja nie ma ekstremów lokalnych (jest ściśle monotoniczna). 
+* Asymptoty: 
+    * asymptota pozioma o równaniu: $y = 0$ (oś $OX$),
+    * wykres zbliża się do osi $OX$, ale jej nie dotyka. 
+
+5. **Wykres**
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+
+x = np.linspace(-3, 3, 400)
+
+a_values = [0.5, 1.5, np.e, 4.0] 
+
+plt.figure(figsize=(8, 5))
+plt.axhline(0, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--')
+
+for a in a_values:
+    
+    y = a**x 
+    plt.plot(x, y, label=f'$f(x) = {a:.2f}^x$')
+
+plt.title('Wykresy Funkcji Wykładniczej $f(x) = a^x$ dla różnych $a$')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.ylim(-1, 20)  
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+# 2. Funkcja logarytmiczna
+
+1. **Wzór**
+
+$$
+f(x) = \log_{a}x
+$$
+
+Parametry:
+
+* $x$ - zmienna niezależna, gdzie $x > 0$,
+* $a$ - podstawa logarytmu, gdzie $a \in \mathbb{R}^ {+}$, $a\ne 1$.
+
+2. **Charakterystyka funkcji**
+* Dziedzina:
+$D = \mathbb{R} ^ {+} = (0, +\infty)$ - tylko liczby dodatnie.
+* Przeciwdziedzina:
+$W = \mathbb{R}$ - zbiór wszystkich liczb rzeczywistych.
+* Punkty szczególne:
+    * miejsce zerowe: $x_{0} = 1$, ponieważ $f(1) = \log_{a}1 = 0$,
+    * punkt przecięcia z osią OY: Brak (oś $OY$ jest asymptotą).
+* Ważne: 
+funkcja logatytmiczna jest funkcją odwrotną do funkcji wykładniczej. 
+
+3. **Opis parametrów**
+    * $a$ - podstawa logarytmu:
+        * podstawa musi być dodatnia $a>0$ i różna od $a\ne1$,
+        * określa monotoniczność i tempo zmian funkcji:
+            * jeśli $a>1$, funkcja jest rosnąca,
+            * jeśli $0 < a < 1$, funkcja jest malejąca.
+
+4. **Własności**
+    * Monotoniczność:
+        * jeśli $a>1$, funkcja jest rosnąca w całej dziedzinie,
+        * jeśli $0<a<1$, funkcja jest malejąca w całej dziedzinie.
+    * Ekstrema:
+    funkcja nie ma ekstremów lokalnych (jest ściśle monotoniczna).
+    * Asymptoty: asymptota pionowa o równaniu $x=0$ (oś OY).
+
+5. **Wykres**
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+x = np.linspace(0.1, 5, 400) 
+
+
+b_values = [0.5, 1.5, np.e, 10.0]
+
+plt.figure(figsize=(8, 5))
+plt.axhline(0, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--') 
+
+for b in b_values:
+   
+    
+    y = np.log(x) / np.log(b) 
+    plt.plot(x, y, label=f'$f(x) = \\log_{{{b:.2f}}}(x)$')
+
+plt.title('Wykresy Funkcji Logarytmicznej $f(x) = \\log_a(x)$ dla różnych $a$')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(0, 5)
+plt.ylim(-5, 5)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+# 3. Funkcja Wymierna 
+
+1. **Wzór**
+
+$$
+f(x)= \frac{a}{x-p}+q
+$$
+
+Parametry:
+
+* $a$ - współczynnik proporcjonalności, gdzie $a\in\mathbb{R}$, $a\ne 0$,
+* $p$ - przesunięcie w poziomie,  
+* $q$ - przesunięcie w pionie.
+
+2. **Charakterystyka funkcji**
+    * Dziedzina: $D =\mathbb{R}\setminus\{p\}$ - zbiór wszystkich liczb rzeczywistych.
+    * Przeciwdziedzina: $W = \mathbb{R}\setminus\{q\}$ - zbiór wszystkich liczb rzeczywistych.
+    * Punkty szczególne:
+        * miejsce zerowe: $x_{0}=p-\frac{a}{q}$, dla $q\ne0$,
+        * punkty przecięcia z osią OY: ($0$,$\frac{a}{-q}$), dla $p\ne0$.
+
+3. **Opis Parametrów** 
+    * $a$ - współczynnik proporcjonalności:
+        * Określa, w których ćwiartkach znajdują się gałęzie hiperboli (po uwzględnieniu przesunięć $p$ i $q$):
+            * jeśli $a>0$, gałęzie leżą w I i III ćwiartce,
+            * jeśli $a<0$, gałęzie leżą w II i IV ćwiartce.
+        * Określa odległość hiperboli od asymptot: im większa wartość bezwzględna $|a|$, w tym hiperbola jest bardziej "odsunięta" od punktu ($p,q$). 
+    * $p$ - przesunięcie w poziomie:
+        * określa położenie asymptoty pionowej: $x=p$. Przesuwa wykres w prawo ($p>0$) lub w lewo ($p<0$).
+    * $q$ - przesunięcie w pionie:
+        * określa położenie asymptoty poziomej: $y=q$. Przesuwa wykres w górę $q<0$ lub w dół $q<0$.
+
+4. **Własności**
+    * Monotoniczność: Funkcja jest monotoniczna w każdym z przedziałów swojej dziedziny:
+      * dla $a > 0$: malejąca w ($-\infty$,$p$) i malejąca w ($p$,$\infty$),
+      * dla $a < 0$: rosnąca w ($-\infty$,$p$) i rosnąca w ($p$,$\infty$).
+    * Ekstrema: funkcja nie ma ekstremów lokalnych.
+    * Asymptoty:
+        * asymptota pionowa: $x=p$,
+        * asymptota pozioma: $y=q$.
+
+5. **Wykres**
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+a = 1.0
+
+
+pq_combinations = [
+    (0, 0),    
+    (2, 0),    
+    (0, 1),    
+    (-1, -2)   
+]
+
+plt.figure(figsize=(8, 5))
+plt.title(f'Wykresy Funkcji Wymiernej $f(x) = \\frac{{{'a'}}}{{x-p}} + q$')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.xlim(-5, 5)
+plt.ylim(-5, 5)
+plt.grid(True, linestyle=':', alpha=0.6)
+
+
+plt.axhline(0, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--')
+
+for p, q in pq_combinations:
+   
+    
+   
+    x_left = np.linspace(-5, p - 0.1, 200)
+    
+    x_right = np.linspace(p + 0.1, 5, 200)
+    
+    
+    y_left = a / (x_left - p) + q
+    y_right = a / (x_right - p) + q
+    
+    label = f'p={p}, q={q} (Asymptoty: x={p}, y={q})'
+    
+   
+    plt.plot(x_left, y_left, label=label, linewidth=2)
+    plt.plot(x_right, y_right, linewidth=2)
+    plt.axvline(p, color='red', linestyle=':', alpha=0.4)
+    plt.axhline(q, color='blue', linestyle=':', alpha=0.4)
+
+plt.legend()
+plt.show()
+
+```
+# 4. Funkcja Sinus
+
+1. **Wzór**
+
+$$
+f(x) = A \sin(B(x-C))+D
+$$
+
+Parametry:
+
+* $x$ - argument w radianach lub stopniach,
+* $f(x)$ - wartość funkcji (rzut na oś Y),
+* $A,B,C,D$ - cztery parametry wpływające na kształt i położenie wykresu.
+
+2. **Charakterystyka funkcji**
+    * Dziedzina: $D = \mathbb{R}$ - zbiór wszystkich liczb rzeczywistych.
+    * Przeciwdziedzina: $W= [D-|A|,D+|A|]$. 
+    * Punkty szczególne:
+        * miejsca zerowe: $x_k=k\pi$, gdzie $k\in\mathbb{Z}$,
+        * punkt przecięcia z osią $OY$: ($0,0$).
+
+3. **Opis Parametrów**
+    * $A$ (Amplituda): zmienna wysokość fali(maksymalne wychylenie od osi $X$). W $f(x) = \sin(x)$ jest to $A = 1$.
+    * $B$ (Częstość): zmienia okres funkcji. W $f(x) = \sin(x)$ jest to $B=1$.
+    * $C$ Przesunięcie fazowe: przesuwa wykres w poziomie.
+    * $D$ Przesunięcie pionowe: przesuwa wykres w pionie.
+    
+
+4. **Własności**
+    * Okresowość: Funkcja jest okresowa z okresem podstawowym $T=\frac{2\pi}{|B|}$.
+    * Monotoniczność: 
+        * funkcja nie jest monotoniczna w całej dziedzinie,
+        * przykład: rosnąca w [$-\frac{\pi}{2}+ 2k\pi, \frac{\pi}{2}+2k\pi$]; malejąca w [$\frac{\pi}{2}+ 2k\pi, \frac{3\pi}{2}+2k\pi$].
+    * Ekstrema
+        * maksima lokalne: $y_{max} = 1$ dla $\frac{\pi}{2}+ 2k\pi$,
+        * minima lokalne: $y_{min} =-1$ dla $\frac{3\pi}{2}+2k\pi$.
+    * Parzystość/Nieparzystość: funkcja jest nieparzysta ($f(-x) = -f(x)$).
+    * Asymptoty: funkcja nie ma asymptot.
+
+5. **Wykres**
+
+```{python}
+#| echo: false
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+
+A = 1.0  
+c = 0.0  
+d = 0.0  
+
+
+b_values = [1.0, 1.25, 1.5, 1.75] 
+
+
+x_min = -2 * np.pi
+x_max = 2 * np.pi
+x = np.linspace(x_min, x_max, 500)
+
+plt.figure(figsize=(8, 5))
+plt.axhline(d, color='gray', linestyle='--') 
+plt.axvline(0, color='gray', linestyle='--')
+
+for b in b_values:
+    
+    y = A * np.sin(b * (x - c)) + d 
+    
+   
+    period = 2 * np.pi / b
+    
+    plt.plot(x, y, label=f'b={b} (Okres T$\\approx${period:.2f})', linewidth=2)
+
+plt.title('Wykresy Funkcji Sinus $f(x) = A(\\sin(b \\cdot x - C) + D)$ dla $x \\in [-2\\pi, 2\\pi]$')
+plt.xlabel('x (w radianach)')
+plt.ylabel('f(x)')
+
+
+pi_ticks = np.array([-2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2]) * np.pi
+pi_labels = ['-2$\\pi$', '-1.5$\\pi$', '-$\\pi$', '-0.5$\\pi$', '0', '0.5$\\pi$', '$\\pi$', '1.5$\\pi$', '2$\\pi$']
+plt.xticks(pi_ticks, pi_labels)
+
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+# 5. Funkcja potęgowa
+
+1. **Wzór**
+
+$$
+ {f(x) = x^{n}}
+$$
+
+Parametry:
+    
+* $x$ - podstawa(zmienna niezależna),
+* $n$ - wykładnik.
+
+2. **Charakterystyka funkcji**
+
+    * Dziedzina: $D = \mathbb{R}$
+    * Przeciwdziedzina:
+        * $W = [0,+\infty)$, dla $n$ parzyste,
+        * $W=\mathbb{R}$, dla $n$ nieparzyste.
+    * Punkty szczególne:
+        * miejsca zerowe: $x_{0} = 0$,
+        * punkty przecięcia: $(0,0)$.
+
+3. **Opis parametrów**
+    * $n$ (Wykładnik):
+        * decyduje o kształcie i symetrii wykresu,
+        * $n$ parzyste: wykres jest symetryczny względem osi $OY$ (jak parabola $x^{2}$). Wraz ze wzrostem $n$, ramiona stają się bardziej strome, a obszar między $-1$ a $1$ jest bardziej spłaszczony,
+        * $n$ nieparzyste: wykres jest symetryczny względem początku układu współrzędnych (jak $x^{3}$). Wraz ze wzrostem $n$, wykres staje się bardziej stromy.
+
+4. **Własności**
+* dla $n$ parzyste:
+    * Monotoniczność: malejąca w $(-\infty,0]$, rosnąca w $[0,+\infty)$,
+    * Ekstrema: minimum globalne: w punkcie $x=0$, $y_{min} = 0$,
+    * Parzystość/Nieparzystość: funkcja jest parzysta,
+    * Asymptoty: funkcja nie ma asymptoty. 
+
+* dla $n$ nieparzysta
+    * Monotoniczność: rosnąca w całej dziedzinie $\mathbb{R}$,
+    * Ekstrema: brak ekstremów,
+    * Parzystość/Nieparzystość: funkcja jest nieparzysta,
+    * Asymptoty: funkcja nie ma asymptoty. 
+
+5. **Wykres**
+
+```{python}
+#| echo: false
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+x = np.linspace(-3, 3, 400)
+x_positive = np.linspace(0.1, 3, 400) 
+
+
+n_values = [-2, 0.5, 2, 3]
+
+plt.figure(figsize=(8, 5))
+plt.axhline(0, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--')
+
+for n in n_values:
+    
+    if n == 2 or n == 3:
+        y = x**n
+        plt.plot(x, y, label=f'$f(x) = x^{n}$ (cały zakres)')
+    
+    elif n == -2:
+        y = x**n
+        plt.plot(x[x != 0], y[x != 0], label=f'$f(x) = x^{n}$ (cały zakres, bez 0)')
+   
+    elif n == 0.5:
+        y = x_positive**n 
+        plt.plot(x_positive, y, label=f'$f(x) = x^{n}$ (x >= 0)')
+        
+plt.title('Wykresy Funkcji Potęgowej $f(x) = x^n$ dla różnych $n$')
+plt.xlabel('x')
+plt.ylabel('f(x)')
+plt.ylim(-5, 10) 
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+    
+    
+
+
+
+
+
+
+
+
+
+
