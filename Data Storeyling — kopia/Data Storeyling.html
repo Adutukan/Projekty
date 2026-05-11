@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Storytelling – Techniki Narracyjne</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,700;0,900;1,300;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0b0e17;
+  --bg2:#0f1420;
+  --card:#141929;
+  --card2:#1a2235;
+  --green:#00d4a0;
+  --green2:#00a87f;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --blue:#3b82f6;
+  --text:#f0f4ff;
+  --muted:#6b7fa8;
+  --border:#1e2d4a;
+  --border2:#243352;
+}
+
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text)}
+body{font-family:'DM Sans',sans-serif}
+
+/* ── DECK ── */
+.deck{position:relative;width:100vw;height:100vh}
+.slide{
+  position:absolute;inset:0;
+  opacity:0;pointer-events:none;
+  transition:opacity .55s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  background:var(--bg);overflow:hidden;
+}
+.slide.active{opacity:1;pointer-events:all}
+
+/* ── PROGRESS BAR ── */
+#prog{position:fixed;top:0;left:0;height:2px;background:var(--green);transition:width .45s ease;z-index:999}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;bottom:1.75rem;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:1.25rem;
+  background:rgba(11,14,23,.88);backdrop-filter:blur(16px);
+  border:1px solid var(--border2);border-radius:3rem;
+  padding:.6rem 1.4rem;z-index:998;
+}
+.nav button{
+  background:none;border:1px solid var(--border2);color:var(--muted);
+  width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:.85rem;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.nav button:hover{border-color:var(--green);color:var(--green)}
+.dots{display:flex;gap:5px;align-items:center}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--border2);cursor:pointer;transition:all .25s}
+.dot.active{background:var(--green);width:20px;border-radius:3px}
+.ctr{font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);min-width:38px;text-align:center}
+
+/* ── COMMON ── */
+.pad{padding:3rem 4.5rem}
+.section-tag{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--green);font-family:'DM Mono',monospace;font-weight:500;
+  margin-bottom:1.5rem;
+}
+.section-tag::before{content:'';width:1.5rem;height:1px;background:var(--green)}
+.h1{font-family:'Fraunces',serif;font-size:clamp(2.2rem,4.5vw,3.8rem);font-weight:900;line-height:1.08;letter-spacing:-.02em}
+.h2{font-family:'Fraunces',serif;font-size:clamp(1.6rem,3vw,2.6rem);font-weight:700;line-height:1.15;margin-bottom:1.25rem}
+.lead{font-size:1.05rem;color:var(--muted);line-height:1.75;font-weight:300}
+.accent{color:var(--green)}
+.italic{font-style:italic}
+
+/* cards */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.25rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+.card-accent{border-color:var(--green);background:rgba(0,212,160,.05)}
+.card h3{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;margin-bottom:.6rem}
+.card p,.card li{color:var(--muted);font-size:.88rem;line-height:1.65}
+.card ul{list-style:none;padding:0}
+.card ul li{padding:.25rem 0;display:flex;align-items:flex-start;gap:.5rem}
+.card ul li::before{content:'→';color:var(--green);font-size:.75rem;margin-top:.1rem;flex-shrink:0}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th{text-align:left;padding:.8rem 1rem;color:var(--green);font-weight:500;font-family:'DM Mono',monospace;font-size:.75rem;letter-spacing:.05em;border-bottom:1px solid var(--border2)}
+.tbl td{padding:.8rem 1rem;border-bottom:1px solid var(--border);color:var(--muted)}
+.tbl td:first-child{color:var(--text);font-weight:500}
+.tbl tr:last-child td{border-bottom:none}
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+
+/* number stat */
+.stat-num{font-family:'Fraunces',serif;font-size:clamp(4rem,8vw,7rem);font-weight:900;color:var(--green);line-height:1;margin-bottom:.5rem}
+.stat-desc{font-size:1rem;color:var(--muted);line-height:1.7;max-width:44ch}
+
+/* quote */
+.blockquote{background:var(--card);border-left:3px solid var(--green);border-radius:0 12px 12px 0;padding:1.5rem 2rem;font-size:1.05rem;font-style:italic;color:var(--text);line-height:1.7}
+.blockquote cite{display:block;margin-top:.75rem;font-style:normal;font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace}
+
+/* pill */
+.pill{display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,212,160,.1);border:1px solid rgba(0,212,160,.25);color:var(--green);border-radius:2rem;padding:.25rem .75rem;font-size:.75rem;font-weight:500}
+
+/* ── SLIDE 1: COVER ── */
+#s1{
+  background:radial-gradient(ellipse at 65% 40%,#071f2e 0%,var(--bg) 60%);
+  justify-content:center;padding:0 4.5rem;
+  position:relative;overflow:hidden;
+}
+#s1::before{
+  content:'DATA';
+  position:absolute;right:-2rem;top:50%;transform:translateY(-50%);
+  font-family:'Fraunces',serif;font-size:22vw;font-weight:900;
+  color:rgba(0,212,160,.04);line-height:1;pointer-events:none;
+  letter-spacing:-.05em;
+}
+#s1 .tag{font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.2em;color:var(--green);text-transform:uppercase;margin-bottom:1.5rem}
+#s1 .sub{font-size:1.15rem;color:var(--muted);font-weight:300;margin-top:1.25rem;max-width:52ch;line-height:1.7}
+#s1 .badges{display:flex;gap:.75rem;margin-top:2.5rem;flex-wrap:wrap}
+
+/* ── SLIDE 2: section divider ── */
+.sec-div{
+  justify-content:center;align-items:center;text-align:center;
+  background:linear-gradient(160deg,var(--bg2) 0%,var(--bg) 100%);
+}
+.sec-div .bar{width:3rem;height:3px;background:var(--green);border-radius:2px;margin:0 auto 2rem}
+.sec-div h2{font-family:'Fraunces',serif;font-size:clamp(2.5rem,5vw,4.2rem);font-weight:900;margin-bottom:.75rem;line-height:1.1}
+.sec-div p{color:var(--muted);font-size:1rem}
+
+/* ── split layout ── */
+.split{flex-direction:row;overflow:hidden}
+.split .l{flex:1;display:flex;flex-direction:column;justify-content:center;padding:3rem 4rem}
+.split .r{width:46%;background:var(--card);display:flex;align-items:center;justify-content:center;padding:2.5rem;border-left:1px solid var(--border)}
+
+/* ── bar chart visual ── */
+.bar-list{display:flex;flex-direction:column;gap:1rem;width:100%}
+.bar-row{display:flex;align-items:center;gap:1rem}
+.bar-lbl{font-size:.8rem;font-family:'DM Mono',monospace;color:var(--muted);width:110px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:38px;background:var(--card2);border-radius:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:8px;display:flex;align-items:center;padding-left:.9rem;font-size:.8rem;font-weight:600;font-family:'DM Mono',monospace}
+.bar-g{background:var(--green);color:#0b0e17}
+.bar-d{background:#1e2d4a;color:var(--muted)}
+
+/* ── Freytag ── */
+.freytag svg{width:100%;height:200px}
+
+/* ── process steps ── */
+.steps{display:flex;align-items:flex-start;position:relative;padding-top:.5rem}
+.steps::before{content:'';position:absolute;top:18px;left:18px;right:18px;height:1px;background:var(--border2);z-index:0}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1}
+.step-dot{width:36px;height:36px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:.75rem;font-weight:500;color:#0b0e17;margin-bottom:.75rem;border:3px solid var(--bg)}
+.step-title{font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:.35rem}
+.step-desc{font-size:.75rem;color:var(--muted);max-width:90px;line-height:1.4}
+
+/* ── error vs good ── */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.cmp-bad{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);border-radius:14px;padding:1.75rem}
+.cmp-good{background:rgba(0,212,160,.06);border:1px solid rgba(0,212,160,.25);border-radius:14px;padding:1.75rem}
+.cmp-label{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem;font-family:'DM Mono',monospace}
+.cmp-label.bad{color:var(--red)}
+.cmp-label.good{color:var(--green)}
+.cmp-text{color:var(--muted);font-size:.9rem;line-height:1.65}
+
+/* ── curse of knowledge ── */
+.curse-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative}
+.curse-box .inner{border-left:3px solid var(--amber);padding-left:1.25rem;margin-top:1rem}
+
+/* ── bibliography ── */
+#s20{overflow-y:auto}
+#s20 .bib-wrap{padding:2.5rem 4.5rem 6rem;overflow-y:auto;flex:1}
+.bib-item{display:flex;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--border)}
+.bib-item:last-child{border-bottom:none}
+.bib-n{width:28px;height:28px;border-radius:50%;background:var(--green);color:#0b0e17;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-family:'DM Mono',monospace}
+.bib-text{font-size:.83rem;color:var(--muted);line-height:1.65}
+.bib-text strong{color:var(--text)}
+.bib-text a{color:var(--green);text-decoration:none;word-break:break-all}
+.bib-text a:hover{text-decoration:underline}
+
+/* ── preattentive shapes ── */
+.pre-row{display:flex;justify-content:center;gap:3rem;align-items:center;margin-top:2.5rem;flex-wrap:wrap}
+.pre-item{display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.pre-label{font-size:.78rem;color:var(--muted);font-family:'DM Mono',monospace}
+.shape-circle{width:80px;height:80px;border-radius:50%;background:var(--card2)}
+.shape-sq-big{width:100px;height:80px;border-radius:10px;background:var(--green)}
+.shape-sq-border{width:80px;height:80px;border-radius:8px;border:2.5px solid var(--green);background:transparent}
+.shape-diamond-wrap{width:80px;height:80px;display:flex;align-items:center;justify-content:center}
+.shape-diamond{width:60px;height:60px;background:var(--card2);transform:rotate(45deg);border-radius:4px}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<div class="deck">
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 1: OKŁADKA
+════════════════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div>
+    <p class="tag">Prezentacja · 2026 Gracjan Głowania</p>
+    <h1 class="h1">Data<br><em class="italic accent">Storytelling</em></h1>
+    <p class="sub">Techniki narracyjne pozwalające przekształcić suchy raport w angażującą historię biznesową — od definicji po praktyczne wdrożenie.</p>
+    <div class="badges">
+      <span class="pill">📊 Dane</span>
+      <span class="pill">📖 Narracja</span>
+      <span class="pill">🎨 Wizualizacja</span>
+      <span class="pill">🎯 Decyzje</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 2: CO TO JEST DATA STORYTELLING?
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s2" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Definicja</div>
+  <h2 class="h2">Czym jest Data Storytelling?</h2>
+  <p class="lead" style="max-width:65ch;margin-bottom:2rem">
+    Data storytelling to <span class="accent">nadawanie liczbom i danym sensu</span> w taki sposób, żeby stały się jasne i znaczące dla odbiorców — skupiając się na wartości wniosków, a nie tylko na prezentacji liczb.
+  </p>
+  <div class="grid-3">
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:.75rem">🗄️</div>
+      <h3>Dane</h3>
+      <p>Surowe fakty i liczby — fundament dowodowy każdej tezy. Bez nich nie ma wiarygodności.</p>
+    </div>
+    <div class="card card-accent">
+      <div style="font-size:2rem;margin-bottom:.75rem">📖</div>
+      <h3>Narracja</h3>
+      <p>Kontekst i komentarz, który nadaje sens liczbom, prowadzi odbiorcę do wniosków i inspiruje działanie.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:.75rem">📈</div>
+      <h3>Wizualizacja</h3>
+      <p>Graficzna reprezentacja, która pozwala szybciej dostrzec wzorce, trendy i anomalie w danych.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 3: DLACZEGO OPOWIEŚCI DZIAŁAJĄ?
+════════════════════════════════════════════════ -->
+<div class="slide split" id="s3">
+  <div class="l">
+    <div class="section-tag">Neurobiologia</div>
+    <h2 class="h2">Dlaczego mózg kocha opowieści?</h2>
+    <p class="lead" style="margin-bottom:1.5rem">Suche fakty aktywują jedynie ośrodki językowe (Broca i Wernicke). Historia angażuje <span class="accent">cały mózg</span> — emocje, zmysły i logikę jednocześnie.</p>
+    <div class="card" style="margin-bottom:1rem">
+      <p><strong style="color:var(--text)">Lewa półkula</strong> — logika, analityka, szczegóły<br>
+      <strong style="color:var(--green)">Prawa półkula</strong> — emocje, kreatywność, narracja</p>
+    </div>
+    <p class="lead" style="font-size:.9rem">Data storytelling przemawia do <span class="accent">obu półkul jednocześnie</span> — to właśnie dlatego jest tak perswazyjny.</p>
+  </div>
+  <div class="r">
+    <svg viewBox="0 0 280 260" xmlns="http://www.w3.org/2000/svg" style="width:260px">
+      <ellipse cx="140" cy="130" rx="115" ry="100" fill="#141929" stroke="#1e2d4a" stroke-width="1.5"/>
+      <!-- corpus callosum -->
+      <line x1="140" y1="40" x2="140" y2="220" stroke="#1e2d4a" stroke-width="1" stroke-dasharray="4,3"/>
+      <!-- left brain label -->
+      <text x="75" y="120" text-anchor="middle" fill="#6b7fa8" font-size="11" font-family="DM Mono,monospace">LEWA</text>
+      <text x="75" y="134" text-anchor="middle" fill="#6b7fa8" font-size="9" font-family="DM Mono,monospace">logika</text>
+      <!-- right brain label -->
+      <text x="205" y="120" text-anchor="middle" fill="#00d4a0" font-size="11" font-family="DM Mono,monospace">PRAWA</text>
+      <text x="205" y="134" text-anchor="middle" fill="#00d4a0" font-size="9" font-family="DM Mono,monospace">emocje</text>
+      <!-- glow center -->
+      <circle cx="140" cy="130" r="22" fill="#00d4a0" opacity=".18"/>
+      <circle cx="140" cy="130" r="12" fill="#00d4a0" opacity=".6"/>
+      <circle cx="140" cy="130" r="5" fill="#0b0e17"/>
+      <!-- rays -->
+      <line x1="140" y1="130" x2="85" y2="80" stroke="#00d4a0" stroke-width="1.2" opacity=".5"/>
+      <line x1="140" y1="130" x2="195" y2="80" stroke="#00d4a0" stroke-width="1.2" opacity=".5"/>
+      <line x1="140" y1="130" x2="75" y2="160" stroke="#00d4a0" stroke-width="1.2" opacity=".4"/>
+      <line x1="140" y1="130" x2="205" y2="160" stroke="#00d4a0" stroke-width="1.2" opacity=".4"/>
+      <line x1="140" y1="130" x2="140" y2="210" stroke="#00d4a0" stroke-width="1.2" opacity=".3"/>
+      <circle cx="85" cy="80" r="6" fill="#00d4a0" opacity=".7"/>
+      <circle cx="195" cy="80" r="6" fill="#00d4a0" opacity=".7"/>
+      <circle cx="75" cy="160" r="5" fill="#00d4a0" opacity=".5"/>
+      <circle cx="205" cy="160" r="5" fill="#00d4a0" opacity=".5"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 4: RAPORT VS DATA STORY
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s4" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Porównanie</div>
+  <h2 class="h2">Raport vs. Opowieść o danych</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Cecha</th><th>Zwykły raport</th><th>Data Storytelling</th></tr></thead>
+      <tbody>
+        <tr><td>Cel</td><td>Przekazanie informacji</td><td>Inspiracja do działania</td></tr>
+        <tr><td>Struktura</td><td>Liniowa / tematyczna</td><td>Narracyjna — wstęp, rozwinięcie, zakończenie</td></tr>
+        <tr><td>Skupienie</td><td>Co się stało?</td><td>Dlaczego to ważne i co z tym zrobić?</td></tr>
+        <tr><td>Emocje</td><td>Neutralny, suchy</td><td>Angażuje emocjonalnie — ludzki wymiar danych</td></tr>
+        <tr><td>Pamięć</td><td>Zapominany po 24h</td><td>Zostaje w pamięci — dane połączone z historią</td></tr>
+        <tr><td>Decyzje</td><td>Wymaga interpretacji</td><td>Wprost prowadzi do rekomendacji</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 5: KLĄTWA WIEDZY
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s5" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Błąd poznawczy</div>
+  <h2 class="h2">Klątwa Wiedzy — Wróg nr 1</h2>
+  <div class="curse-box" style="margin-bottom:1.5rem">
+    <p style="color:var(--muted);font-size:.95rem;line-height:1.7">Klątwa wiedzy pojawia się, gdy <strong style="color:var(--text)">zapominasz, jak to jest nie wiedzieć tego, co dziś już wiesz.</strong> Im lepszym ekspertem jesteś w danej dziedzinie, tym łatwiej ulec temu błędowi.</p>
+    <div class="inner">
+      <p style="color:var(--amber);font-size:.85rem;font-style:italic;line-height:1.65">„Eksperyment z wybijaniem rytmu popularnych piosenek pokazał, że ten, kto wybija, spodziewa się trafiać w 50% przypadków — w rzeczywistości trafia w 2,5%."</p>
+      <p style="color:var(--muted);font-size:.75rem;margin-top:.5rem;font-family:'DM Mono',monospace">— Elisabeth Newton, Stanford 1990 / Heath & Heath, HBR 2006</p>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="cmp-bad">
+      <p class="cmp-label bad">⚠ Niedosyt informacji</p>
+      <p class="cmp-text">Znasz kontekst, więc stosujesz skróty myślowe. Odbiorcy gubią się w Twoim toku rozumowania — brak kontekstu → brak zainteresowania.</p>
+    </div>
+    <div class="cmp-bad" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.06)">
+      <p class="cmp-label" style="color:var(--amber)">⚠ Nadmiar informacji</p>
+      <p class="cmp-text">Chcesz wyjaśnić każdy krok analizy, więc pokazujesz setki danych. Odbiorcy są przytłoczeni i tracą koncentrację.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 6: ZROZUMIENIE ODBIORCY
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s6" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Krok 1</div>
+  <h2 class="h2">Zrozum odbiorcę i cel</h2>
+  <p class="lead" style="max-width:60ch;margin-bottom:2rem">Skuteczne opowiadanie historii zaczyna się od zrozumienia, <span class="accent">kto słucha</span> i <span class="accent">dlaczego</span>. Każda grupa ma inne potrzeby, wiedzę i oczekiwania.</p>
+  <div class="grid-3">
+    <div class="card card-accent">
+      <h3>Executive / Zarząd</h3>
+      <ul><li>ROI, strategia, ryzyko</li><li>Narracja: Wynik → Dowód</li><li>Krótko, konkretnie, decyzyjnie</li></ul>
+    </div>
+    <div class="card">
+      <h3>Operational / Menedżer</h3>
+      <ul><li>Efektywność, KPI, procesy</li><li>Narracja: Problem → Rozwiązanie</li><li>Konkretne działania i ich skutki</li></ul>
+    </div>
+    <div class="card">
+      <h3>Technical / Analityk</h3>
+      <ul><li>Metodologia, atrybucja, źródła</li><li>Narracja: Metoda → Wynik</li><li>Szczegółowy kontekst analizy</li></ul>
+    </div>
+  </div>
+  <div class="blockquote" style="margin-top:1.5rem;font-size:.9rem">
+    Kluczowe pytania: <strong style="color:var(--green)">Kto jest odbiorcą? Dlaczego pokazuję te dane? Jakie działanie ma wyniknąć z tej prezentacji?</strong>
+    <cite>Źródło: cognity.pl</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 7: BUDOWANIE NARRACJI
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s7" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Krok 2</div>
+  <h2 class="h2">Budowanie narracji wokół danych</h2>
+  <div class="tbl-wrap" style="margin-bottom:1.5rem">
+    <table class="tbl">
+      <thead><tr><th>Element narracji</th><th>Cel</th><th>Przykład zastosowania</th></tr></thead>
+      <tbody>
+        <tr><td>Wstęp</td><td>Zarysowanie problemu / kontekstu</td><td>„Sprzedaż w Q2 spadła o 12% — zastanówmy się dlaczego."</td></tr>
+        <tr><td>Rozwinięcie</td><td>Prezentacja danych i analiza</td><td>Trendy miesięczne, porównanie regionów, analiza KPI</td></tr>
+        <tr><td>Zakończenie</td><td>Wnioski i rekomendacje</td><td>„Największy spadek w regionie południe — optymalizacja dystrybucji."</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid-3">
+    <div class="card"><h3>Jaki jest główny przekaz?</h3><p>Jedna teza, którą chcesz udowodnić danymi — „The Big Idea".</p></div>
+    <div class="card card-accent"><h3>Jak dane wspierają przekaz?</h3><p>Dobieraj tylko te dane, które potwierdzają Twoją narrację. Bądź selektywny.</p></div>
+    <div class="card"><h3>Co może pytać odbiorca?</h3><p>Odpowiedz na pytania, zanim zostaną zadane. Buduj suspense i prowadź do wniosków.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 8: ŁUK DRAMATYCZNY FREYTAGA
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s8" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Technika narracyjna</div>
+  <h2 class="h2">Łuk dramatyczny Freytaga w danych</h2>
+  <div class="freytag" style="margin:1rem 0">
+    <svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+      <line x1="30" y1="175" x2="780" y2="175" stroke="#1e2d4a" stroke-width="1.5"/>
+      <line x1="30" y1="10" x2="30" y2="175" stroke="#1e2d4a" stroke-width="1.5"/>
+      <polyline points="70,160 400,25 730,160" fill="none" stroke="#00d4a0" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="70" cy="160" r="7" fill="#f0f4ff" stroke="#00d4a0" stroke-width="2"/>
+      <circle cx="400" cy="25" r="9" fill="#ef4444"/>
+      <circle cx="730" cy="160" r="7" fill="#00d4a0"/>
+      <text x="70" y="190" text-anchor="middle" fill="#6b7fa8" font-size="12" font-family="DM Mono,monospace">EKSPOZYCJA</text>
+      <text x="400" y="16" text-anchor="middle" fill="#f0f4ff" font-size="11" font-weight="700" font-family="DM Mono,monospace">PUNKT ZWROTNY</text>
+      <text x="730" y="190" text-anchor="middle" fill="#6b7fa8" font-size="12" font-family="DM Mono,monospace">ROZWIĄZANIE</text>
+      <!-- labels along arc -->
+      <text x="200" y="110" fill="#6b7fa8" font-size="10" font-family="DM Sans,sans-serif">Narastające napięcie</text>
+      <text x="530" y="110" fill="#6b7fa8" font-size="10" font-family="DM Sans,sans-serif">Rozwiązanie problemu</text>
+    </svg>
+  </div>
+  <div class="grid-3">
+    <div class="card"><h3>Ekspozycja</h3><p>Kontekst, status quo — gdzie jesteśmy i co wiemy. Wprowadź bohatera (klienta, produkt, rynek).</p></div>
+    <div class="card" style="border-color:var(--red);background:rgba(239,68,68,.05)"><h3>Punkt zwrotny</h3><p>Problem, napięcie, anomalia w danych — coś się zmieniło i wymaga uwagi oraz działania.</p></div>
+    <div class="card card-accent"><h3>Rozwiązanie</h3><p>Rekomendacja, wnioski, konkretny krok — dane wskazują drogę wyjścia z problemu.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 9: TECHNIKA SO WHAT?
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s9" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Technika narracyjna</div>
+  <h2 class="h2">Technika „So What?" — I co z tego?</h2>
+  <p class="lead" style="max-width:60ch;margin-bottom:2rem">Każdą liczbę, którą prezentujesz, przetestuj pytaniem: <span class="accent">„I co z tego wynika?"</span> Dopiero odpowiedź na to pytanie tworzy wartość dla odbiorcy.</p>
+  <div class="cmp">
+    <div class="cmp-bad">
+      <p class="cmp-label bad">✗ Suchy fakt</p>
+      <p class="cmp-text" style="font-size:1.05rem;color:var(--text);margin-bottom:.75rem">„Nasza konwersja spadła o 5%."</p>
+      <p class="cmp-text">Odbiorca słyszy liczbę, ale nie wie co z nią zrobić. Brak kontekstu = brak działania.</p>
+    </div>
+    <div class="cmp-good">
+      <p class="cmp-label good">✓ Data Story</p>
+      <p class="cmp-text" style="font-size:1.05rem;color:var(--text);margin-bottom:.75rem">„Konwersja spadła o 5%, co oznacza utratę 200 tys. zł miesięcznie — natychmiast wdrożymy testy A/B koszyka."</p>
+      <p class="cmp-text">Odbiorca rozumie skalę, konsekwencje i wie, jaki jest następny krok.</p>
+    </div>
+  </div>
+  <div class="cmp" style="margin-top:1.25rem">
+    <div class="cmp-bad">
+      <p class="cmp-label bad">✗ Suchy fakt</p>
+      <p class="cmp-text" style="color:var(--text);margin-bottom:.5rem">„Średni czas obsługi zgłoszenia wynosi 4 minuty."</p>
+    </div>
+    <div class="cmp-good">
+      <p class="cmp-label good">✓ Data Story</p>
+      <p class="cmp-text" style="color:var(--text);margin-bottom:.5rem">„Dzięki skróceniu czasu obsługi do 4 minut klienci oszczędzają 500h miesięcznie — lojalność wzrosła o 12%."</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 10: WIZUALIZACJA — ZASADY
+════════════════════════════════════════════════ -->
+<div class="slide" id="s10" style="flex-direction:column;padding:3rem 4.5rem;justify-content:center">
+  <div class="section-tag">Krok 3</div>
+  <h2 class="h2">7 zasad dobrej wizualizacji danych</h2>
+  <div class="grid-4" style="margin-top:.5rem">
+    <div class="card"><p style="font-size:1.3rem;margin-bottom:.5rem">1️⃣</p><h3>Prostota</h3><p>Zrozumienie ważniejsze niż piękna forma. Usuń wszystko, co nie niesie informacji.</p></div>
+    <div class="card"><p style="font-size:1.3rem;margin-bottom:.5rem">2️⃣</p><h3>Czytelność</h3><p>Unikaj wykresów z 8+ kolumnami. Lepiej kilka prostych niż jeden skomplikowany.</p></div>
+    <div class="card card-accent"><p style="font-size:1.3rem;margin-bottom:.5rem">3️⃣</p><h3>Selektywność</h3><p>Pokazuj tylko dane potwierdzające tezę. Nie wszystkie dane jakie masz.</p></div>
+    <div class="card"><p style="font-size:1.3rem;margin-bottom:.5rem">4️⃣</p><h3>Kolory</h3><p>Mało kolorów, kontrastowe. Jeden kolor do podkreślenia kluczowej informacji.</p></div>
+    <div class="card"><p style="font-size:1.3rem;margin-bottom:.5rem">5️⃣</p><h3>Sekwencja</h3><p>Wprowadzaj dane jeden po drugim — buduj napięcie i zaskoczenie stopniowo.</p></div>
+    <div class="card"><p style="font-size:1.3rem;margin-bottom:.5rem">6️⃣</p><h3>Porządek</h3><p>Bez szumu informacyjnego — asymetrie i nierówności odciągają uwagę od treści.</p></div>
+    <div class="card"><p style="font-size:1.3rem;margin-bottom:.5rem">7️⃣</p><h3>Wiarygodność</h3><p>Dane z pewnego źródła. Nigdy nie manipuluj skalą osi Y.</p></div>
+    <div class="card" style="border-color:var(--amber);background:rgba(245,158,11,.05)"><p style="font-size:1.3rem;margin-bottom:.5rem">⚡</p><h3>Narzędzia</h3><p>Excel + PowerPoint, Tableau, Power BI, Google Charts, D3.js, Matplotlib.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 11: DOBÓR WYKRESU
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s11" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Wizualizacja</div>
+  <h2 class="h2">Dobór wykresu do historii</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Relacja danych</th><th>Zalecany wykres</th><th>Przykład biznesowy</th></tr></thead>
+      <tbody>
+        <tr><td>Porównanie kategorii</td><td>Słupkowy (Bar Chart)</td><td>Sprzedaż w regionach A vs B vs C</td></tr>
+        <tr><td>Zmiana w czasie</td><td>Liniowy (Line Chart)</td><td>Trend przychodów przez 12 miesięcy</td></tr>
+        <tr><td>Udział w całości</td><td>Waterfall / Treemap</td><td>Struktura kosztów według działów</td></tr>
+        <tr><td>Korelacja / zależność</td><td>Punktowy (Scatter Plot)</td><td>Cena produktu vs. popyt rynkowy</td></tr>
+        <tr><td>Rozkład wartości</td><td>Pudełkowy (Boxplot)</td><td>Rozkład czasu realizacji zamówień</td></tr>
+        <tr><td>Natężenie / mapa</td><td>Heatmap</td><td>Aktywność użytkowników na stronie</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="blockquote" style="margin-top:1.5rem;font-size:.88rem">
+    Cel wizualizacji to nie estetyka — to <strong style="color:var(--green)">zrozumiałość i trafność przekazu</strong>. Odpowiednio dobrany wykres może wielokrotnie zwiększyć siłę oddziaływania danych.
+    <cite>Źródło: cognity.pl</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 12: KOLOR JAKO NARZĘDZIE
+════════════════════════════════════════════════ -->
+<div class="slide split" id="s12">
+  <div class="l">
+    <div class="section-tag">Wizualizacja</div>
+    <h2 class="h2">Kolor to Twoje najsilniejsze słowo</h2>
+    <p class="lead" style="margin-bottom:1.5rem">Używaj <span class="accent">szarości dla kontekstu</span>, a intensywnego koloru tylko dla tego, co jest kluczowe w historii. Jeden wyróżniony element przykuwa wzrok.</p>
+    <div class="card"><ul>
+      <li>Nie więcej niż 3 kolory na slajdzie</li>
+      <li>Kolor = znaczenie (np. zielony = wzrost, czerwony = problem)</li>
+      <li>Unikaj gradient + shadow + efekty 3D</li>
+      <li>Testuj pod kątem daltonizmu</li>
+    </ul></div>
+  </div>
+  <div class="r">
+    <div class="bar-list" style="width:100%;max-width:320px">
+      <div class="bar-row">
+        <span class="bar-lbl">Konk. A</span>
+        <div class="bar-track"><div class="bar-fill bar-d" style="width:45%">45%</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl" style="color:var(--green)">TWOJA</span>
+        <div class="bar-track"><div class="bar-fill bar-g" style="width:85%">85%</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl">Konk. B</span>
+        <div class="bar-track"><div class="bar-fill bar-d" style="width:30%">30%</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-lbl">Konk. C</span>
+        <div class="bar-track"><div class="bar-fill bar-d" style="width:55%">55%</div></div>
+      </div>
+      <p style="color:var(--muted);font-size:.75rem;text-align:center;margin-top:.75rem;font-style:italic">Kolor wyróżnia bohatera historii</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 13: PREATTENTIVE — KIEROWANIE UWAGĄ
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s13" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Wizualizacja</div>
+  <h2 class="h2">Preattentive — kierowanie uwagą widza</h2>
+  <p class="lead" style="max-width:65ch;margin-bottom:.5rem">Mózg wykrywa te różnice w <span class="accent">ułamku sekundy</span>, zanim świadomie przetworzy dane. Używaj ich celowo, aby poprowadzić wzrok odbiorcy.</p>
+  <div class="pre-row">
+    <div class="pre-item">
+      <div class="shape-circle"></div>
+      <p class="pre-label">Kolor</p>
+    </div>
+    <div class="pre-item">
+      <div class="shape-sq-big"></div>
+      <p class="pre-label">Rozmiar</p>
+    </div>
+    <div class="pre-item">
+      <div class="shape-sq-border"></div>
+      <p class="pre-label">Kształt</p>
+    </div>
+    <div class="pre-item">
+      <div class="shape-diamond-wrap"><div class="shape-diamond"></div></div>
+      <p class="pre-label">Kąt</p>
+    </div>
+    <div class="pre-item">
+      <div style="width:80px;height:80px;background:var(--card2);border-radius:8px;opacity:.3;border:2px solid var(--border)"></div>
+      <p class="pre-label">Intensywność</p>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-top:1.5rem">
+    <div class="card"><h3>Zasada Gestalt: Bliskość</h3><p>Elementy blisko siebie są powiązane — grupuj dane, które należą razem.</p></div>
+    <div class="card card-accent"><h3>Zasada Gestalt: Podobieństwo</h3><p>Ten sam kolor = ta sama kategoria. Mózg automatycznie tworzy grupy.</p></div>
+    <div class="card"><h3>Zasada Gestalt: Obramowanie</h3><p>Ramka wokół elementu wyróżnia go jako wyjątek lub kluczową informację.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 14: EMOCJE I KONTEKST
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s14" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Krok 4</div>
+  <h2 class="h2">Emocje i kontekst w danych</h2>
+  <div class="tbl-wrap" style="margin-bottom:1.5rem">
+    <table class="tbl">
+      <thead><tr><th>Element</th><th>Rola w prezentacji</th><th>Przykład zastosowania</th></tr></thead>
+      <tbody>
+        <tr><td>Emocje</td><td>Wzmacniają zapamiętywalność i zaangażowanie</td><td>Pokazanie wpływu danych na życie ludzi (np. wzrost kosztów leczenia)</td></tr>
+        <tr><td>Kontekst</td><td>Ułatwiają zrozumienie znaczenia liczb</td><td>Porównanie wyników do roku poprzedniego i średniej rynkowej</td></tr>
+        <tr><td>Analogia</td><td>Tłumaczą skalę abstrakcyjnych danych</td><td>„5 PB = co miesiąc 5 nowych Bibliotek Narodowych"</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid-2">
+    <div class="cmp-bad">
+      <p class="cmp-label bad">✗ Bez kontekstu</p>
+      <p class="cmp-text">"Stopa bezrobocia wyniosła 6,2%"<br><br>Liczba, która nic nie mówi odbiorcy bez punktu odniesienia.</p>
+    </div>
+    <div class="cmp-good">
+      <p class="cmp-label good">✓ Z kontekstem i emocją</p>
+      <p class="cmp-text">"Stopa bezrobocia 6,2% to 1,2 mln ludzi — o 80 tys. więcej niż rok temu. Każda dziesiąta z tych osób to rodzic z dziećmi w szkole podstawowej."</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 15: TESTOWANIE I DOSKONALENIE
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s15" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Krok 5</div>
+  <h2 class="h2">Testuj i doskonaluj przekaz</h2>
+  <p class="lead" style="max-width:60ch;margin-bottom:2rem">Nawet najlepiej opracowana prezentacja może nie osiągnąć zamierzonego efektu bez testowania. To <span class="accent">proces iteracyjny</span>, nie jednorazowe działanie.</p>
+  <div class="grid-3" style="margin-bottom:1.5rem">
+    <div class="card card-accent">
+      <h3>Próba generalna</h3>
+      <p>Zaprezentuj dane małej grupie testowej — wyłap niejasności i zbyt złożone wizualizacje, zanim zobaczą je decydenci.</p>
+    </div>
+    <div class="card">
+      <h3>Analiza zrozumiałości</h3>
+      <p>Sprawdź czy narracja logicznie prowadzi przez dane. Poproś kogoś bez kontekstu o streszczenie Twojego przekazu.</p>
+    </div>
+    <div class="card">
+      <h3>Iteracja formy</h3>
+      <p>Zmieniaj strukturę, format i wizualizacje na podstawie feedbacku. Każda prezentacja to lekcja na kolejną.</p>
+    </div>
+  </div>
+  <div class="blockquote" style="font-size:.88rem">
+    Spojrzenie na prezentację z perspektywy odbiorców — co wiedzą, czego nie wiedzą, jakie będą mieć pytania — to <strong style="color:var(--green)">jedna z najskuteczniejszych metod walki z klątwą wiedzy</strong>.
+    <cite>Źródło: ondata.pl</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 16: TYPOWE BŁĘDY
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s16" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Pułapki</div>
+  <h2 class="h2">Typowe błędy w prezentacji danych</h2>
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Błąd</th><th>Dlaczego szkodzi?</th><th>Co zastosować zamiast?</th></tr></thead>
+      <tbody>
+        <tr><td>Brak kontekstu</td><td>Liczby bez tła są niezrozumiałe lub błędnie interpretowane</td><td>Zawsze dodaj punkt odniesienia (rok temu, średnia rynkowa)</td></tr>
+        <tr><td>Zbyt złożone wykresy</td><td>Przesyt kolorów i typów utrudnia odbiór</td><td>Prostota — jeden wykres, jeden przekaz</td></tr>
+        <tr><td>Zmanipulowana skala</td><td>Ucięta oś Y sztucznie wyolbrzymia różnice</td><td>Zawsze zaczynaj oś Y od zera (lub jawnie zaznacz inaczej)</td></tr>
+        <tr><td>Wykres kołowy z 10 kategoriami</td><td>Ludzkie oko nie potrafi porównać małych wycinków</td><td>Wykres słupkowy sortowany malejąco</td></tr>
+        <tr><td>Brak hierarchii informacji</td><td>Gdy wszystko równie ważne, nic nie jest ważne</td><td>Jedna kluczowa liczba wyróżniona rozmiarem/kolorem</td></tr>
+        <tr><td>Nadmierne uogólnienia</td><td>Średnia bez rozproszenia ukrywa prawdziwą historię</td><td>Pokazuj mediany, kwartyle, odchylenia</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 17: VISUAL DATA STORYTELLING
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s17" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Visual Storytelling</div>
+  <h2 class="h2">Visual Data Storytelling — 3 powody, dla których działa</h2>
+  <div class="grid-3">
+    <div class="card card-accent">
+      <div class="stat-num" style="font-size:3rem">1.</div>
+      <h3>Minimalizm i selekcja</h3>
+      <p>Wykres + opowieść = wystarczy, by zaciekawić odbiorcę. Koniec z 50-slajdowymi raportami pełnymi tabel, które nikt nie czyta do końca.</p>
+    </div>
+    <div class="card">
+      <div class="stat-num" style="font-size:3rem">2.</div>
+      <h3>Wpływ na decyzje</h3>
+      <p>Data storytelling przemawia do obu półkul jednocześnie — lewej (dane, logika) i prawej (emocje, kreatywność). To wzmacnia perswazyjną moc przekazu.</p>
+    </div>
+    <div class="card">
+      <div class="stat-num" style="font-size:3rem">3.</div>
+      <h3>Dane się zapomina — opowieści nie</h3>
+      <p>W natłoku informacji tylko dobrze zaprojektowana kreacja z ciekawą historią zatrzymuje wzrok i zostaje w pamięci na długo.</p>
+    </div>
+  </div>
+  <div class="blockquote" style="margin-top:1.5rem;font-size:.88rem">
+    56% konsumentów twierdzi, że <strong style="color:var(--green)">historie związane z marką wpływają na ich decyzję zakupową</strong>.
+    <cite>Źródło: Food Business News / interviewme.pl</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 18: PROCES — 5 KROKÓW
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s18" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Framework</div>
+  <h2 class="h2">Proces tworzenia Data Storytelling — 5 kroków</h2>
+  <div class="steps" style="margin:2rem 0 2.5rem">
+    <div class="step"><div class="step-dot">1</div><div class="step-title">Cel</div><div class="step-desc">Co chcesz osiągnąć? Jaka decyzja ma wyniknąć?</div></div>
+    <div class="step"><div class="step-dot">2</div><div class="step-title">Odbiorca</div><div class="step-desc">Do kogo mówisz? Co wie, czego nie wie?</div></div>
+    <div class="step"><div class="step-dot">3</div><div class="step-title">Selekcja</div><div class="step-desc">Wybierz kluczowe dane — tylko te, co potwierdzają tezę.</div></div>
+    <div class="step"><div class="step-dot">4</div><div class="step-title">Narracja</div><div class="step-desc">Ułóż wstęp, rozwinięcie, zakończenie. Buduj napięcie.</div></div>
+    <div class="step"><div class="step-dot">5</div><div class="step-title">Design</div><div class="step-desc">Wizualizuj, upraszczaj, testuj na odbiorcy testowym.</div></div>
+  </div>
+  <div class="blockquote" style="font-size:.88rem">
+    Kluczem do skutecznego storytellingu danych jest zrozumienie, że dane są jedynie punktem wyjścia. To <strong style="color:var(--green)">sposób ich interpretacji i prezentacji decyduje</strong> o tym, czy zostaną zrozumiane i zapamiętane.
+    <cite>Źródło: cognity.pl</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 19: CZYM NIE JEST / CZYM JEST
+════════════════════════════════════════════════ -->
+<div class="slide pad" id="s19" style="flex-direction:column;justify-content:center">
+  <div class="section-tag">Definicja przez kontrast</div>
+  <h2 class="h2">Czym NIE JEST — a czym JEST data storytelling</h2>
+  <div class="grid-2">
+    <div>
+      <p style="color:var(--red);font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:1rem">✗ Czym NIE JEST</p>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div class="cmp-bad"><p class="cmp-text">Zestaw niepowiązanych ze sobą skomplikowanych wykresów i tabel, które nie tworzą spójnej opowieści</p></div>
+        <div class="cmp-bad"><p class="cmp-text">Prezentacja ogromnej ilości danych, z których trudno wyłuskać istotę informacji</p></div>
+        <div class="cmp-bad"><p class="cmp-text">Wizualizacja, która nie odwołuje się do emocji i nie skłania do refleksji ani działania</p></div>
+      </div>
+    </div>
+    <div>
+      <p style="color:var(--green);font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:1rem">✓ Czym JEST</p>
+      <div style="display:flex;flex-direction:column;gap:.75rem">
+        <div class="cmp-good"><p class="cmp-text">Prosta, zrozumiała wizualizacja skoncentrowana na jednym case study, wniosku lub zagadnieniu</p></div>
+        <div class="cmp-good"><p class="cmp-text">Opowieść prowadząca odbiorcę przez dane — umożliwiająca samodzielne wyciągnięcie wniosków</p></div>
+        <div class="cmp-good"><p class="cmp-text">Historia przekonująca i zrozumiała dla każdego — nie tylko dla ekspertów w dziedzinie</p></div>
+      </div>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:.78rem;margin-top:1rem;font-family:'DM Mono',monospace">Źródło: studio-prezentacji.pl / Piotr Garlej</p>
+</div>
+
+
+
+<!-- ═══════════════════════════════════════════════
+     SLAJD 20: BIBLIOGRAFIA
+════════════════════════════════════════════════ -->
+<div class="slide" id="s20">
+  <div style="padding:2.5rem 4.5rem 1rem;flex-shrink:0">
+    <div class="section-tag">Źródła</div>
+    <h2 class="h2">Bibliografia</h2>
+  </div>
+  <div class="bib-wrap">
+    <div class="bib-item">
+      <div class="bib-n">1</div>
+      <div class="bib-text">
+        <strong>Cognity.pl</strong> — <em>5 wskazówek, jak prezentować dane w Data Storytellingu</em> (2024). Omówienie technik narracyjnych, doboru wizualizacji, roli emocji i kontekstu oraz typowych błędów w prezentacji danych.<br>
+        <a href="https://www.cognity.pl/blog-5-wskazowek-jak-prezentowac-dane-w-data-storytelling" target="_blank">www.cognity.pl/blog-5-wskazowek-jak-prezentowac-dane-w-data-storytelling</a>
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">2</div>
+      <div class="bib-text">
+        <strong>Rojewska, M. / InterviewMe.pl</strong> — <em>Storytelling: co to jest? Definicja i przykłady. Jak stosować?</em> (2025). Definicja storytellingu, jego zastosowanie w marketingu, budowanie więzi z odbiorcą poprzez narrację i emocje.<br>
+        <a href="https://interviewme.pl/blog/storytelling" target="_blank">interviewme.pl/blog/storytelling</a>
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">3</div>
+      <div class="bib-text">
+        <strong>Garlej, P. / Studio Prezentacji</strong> — <em>Czym jest Data Storytelling i jak wizualizacja danych pomaga opowiadać historie?</em> (2023). 7 praktycznych porad dotyczących tworzenia wizualizacji danych, zasady prostoty i sekwencyjnego wprowadzania danych.<br>
+        <a href="https://studio-prezentacji.pl/czym-jest-data-storytelling-i-jak-wizualizacja-danych-pomaga-opowiadac-historie" target="_blank">studio-prezentacji.pl/czym-jest-data-storytelling</a>
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">4</div>
+      <div class="bib-text">
+        <strong>Naborowski, A. / Firmbee.com</strong> — <em>Czym jest data storytelling?</em> (2022). Visual data storytelling, wpływ na decyzje poprzez angażowanie obu półkul mózgowych, minimalizm i selekcja informacji.<br>
+        <a href="https://firmbee.com/pl/czym-jest-data-storytelling" target="_blank">firmbee.com/pl/czym-jest-data-storytelling</a>
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">5</div>
+      <div class="bib-text">
+        <strong>OnData.pl</strong> — <em>Data Storytelling a klątwa wiedzy</em> (2024). Koncepcja klątwy wiedzy (Curse of Knowledge), jej przejawy w prezentowaniu danych — niedosyt i nadmiar informacji — oraz metody walki z tym błędem poznawczym.<br>
+        <a href="https://www.ondata.pl/blog/data-storytelling-a-klatwa-wiedzy/" target="_blank">www.ondata.pl/blog/data-storytelling-a-klatwa-wiedzy</a>
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">6</div>
+      <div class="bib-text">
+        <strong>Newton, E.</strong> — <em>Overconfidence in the Communication of Intent: Heard and Unheard Melodies</em>, rozprawa doktorska, Stanford University (1990). Oryginalny eksperyment z wybijaniem rytmu, opisany przez Heath & Heath w Harvard Business Review (2006).<br>
+        <a href="https://hbr.org/2006/12/the-curse-of-knowledge" target="_blank">hbr.org/2006/12/the-curse-of-knowledge</a>
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">7</div>
+      <div class="bib-text">
+        <strong>Knaflic, C. N.</strong> — <em>Storytelling with Data: A Data Visualization Guide for Business Professionals</em>. Wiley (2015). Fundamentalne kompendium technik narracyjnych i wizualizacji danych dla biznesu; zasada „mniej znaczy więcej" i preattentive attributes.
+      </div>
+    </div>
+    <div class="bib-item">
+      <div class="bib-n">8</div>
+      <div class="bib-text">
+        <strong>Food Business News</strong> — <em>Storytelling takes top spot in Innova's 2020 trends</em> (2020). Badanie potwierdzające, że 56% konsumentów wskazuje, że narracje marek wpływają na decyzje zakupowe.<br>
+        <a href="https://www.foodbusinessnews.net/articles/15010-storytelling-takes-top-spot-in-innovas-2020-trends" target="_blank">foodbusinessnews.net</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div class="nav">
+  <button id="prev">←</button>
+  <div class="dots" id="dots"></div>
+  <button id="next">→</button>
+  <span class="ctr" id="ctr"></span>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const dotsEl=document.getElementById('dots');
+const ctr=document.getElementById('ctr');
+const prog=document.getElementById('prog');
+const total=slides.length;
+let cur=0;
+
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(n){
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur=Math.max(0,Math.min(n,total-1));
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  ctr.textContent=`${cur+1}/${total}`;
+  prog.style.width=((cur+1)/total*100)+'%';
+}
+
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(cur-1);
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>50){dx<0?go(cur+1):go(cur-1);}
+});
+go(0);
+</script>
+</body>
+</html>

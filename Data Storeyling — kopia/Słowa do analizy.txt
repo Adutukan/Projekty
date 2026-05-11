@@ -1,0 +1,32 @@
+Broca i Wernicke: To dwa kluczowe obszary w mózgu odpowiedzialne za mowę. Ośrodek Broki odpowiada za generowanie (produkcję) języka, natomiast ośrodek Wernickego za jego rozumienie. W storytellingu często wspomina się o nich, aby pokazać, że suche dane aktywują tylko te dwa centra, podczas gdy opowieści angażują znacznie więcej obszarów mózgu (np. emocjonalne).  
+
+
+ROI (Return on Investment): Zwrot z inwestycji. Wskaźnik finansowy używany do pomiaru efektywności działania. Informuje o tym, ile zarobiliśmy (lub straciliśmy) w stosunku do nakładów finansowych, jakie ponieśliśmy na dany projekt lub kampanię.  
+
+
+KPI (Key Performance Indicator): Kluczowe wskaźniki efektywności. Są to konkretne mierniki (liczby), które pomagają organizacji ocenić, w jakim stopniu realizuje ona swoje cele strategiczne i operacyjne (np. liczba nowych klientów miesięcznie).  
+
+
+Atrybucja: Proces przypisywania zasług lub przyczyn danemu zdarzeniu. W marketingu oznacza określenie, który kanał kontaktu (np. reklama na Facebooku, e-mail) doprowadził do ostatecznego zakupu przez klienta.  
+
+
+Suspense: Stan niepewności, zaciekawienia i napięcia towarzyszący odbiorcy opowieści. W prezentacji danych polega na stopniowaniu informacji tak, aby widz z niecierpliwością czekał na rozwiązanie problemu lub wynik analizy.  
+
+
+Konwersja: Moment, w którym odbiorca wykonuje pożądaną przez nas czynność. Może to być np. zakup produktu, zapisanie się do newslettera lub kliknięcie w link po obejrzeniu Twojego wykresu.  
+
+
+Waterfall / Treemap: Rodzaje wizualizacji danych:  
+
+Waterfall (Wodospadowy): Pokazuje, jak wartość początkowa zmienia się pod wpływem serii dodatnich i ujemnych czynników.
+
+Treemap (Mapa drzewa): Wykorzystuje zagnieżdżone prostokąty do pokazania hierarchii i wielkości poszczególnych kategorii danych.
+
+
+Preattentive (Atrybuty przedatencyjne): Cechy wizualne (takie jak kolor, rozmiar, orientacja), które nasz mózg przetwarza podświadomie i błyskawicznie (w ułamku sekundy), zanim jeszcze skupimy na nich świadomą uwagę. Są fundamentem skutecznych wykresów.  
+
+
+Proces iteracyjny: Metoda pracy polegająca na powtarzaniu cyklu działań w celu stopniowego ulepszania projektu. Zamiast tworzyć idealny wykres za pierwszym razem, tworzysz prototyp, testujesz go, zbierasz uwagi i wprowadzasz poprawki (kolejna iteracja).  
+
+
+Feedbacku: Informacja zwrotna. Opinie i reakcje odbiorców na Twoją prezentację lub dane, które pozwalają Ci zrozumieć, czy Twój przekaz był jasny i co wymaga poprawy w przyszłości.
